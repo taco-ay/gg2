@@ -1,5 +1,6 @@
 import sqlite3
 import matplotlib
+import os
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -8,8 +9,9 @@ import cartopy.crs as ccrs
 class DB_Map():
     def __init__(self, database):
         self.database = database
-        self.create_cities_table()
-        self.create_user_table()
+        if not os.path.exists(self.database):
+            self.create_cities_table()
+            self.create_user_table()
 
     def create_cities_table(self):
         conn = sqlite3.connect(self.database)
@@ -89,7 +91,7 @@ class DB_Map():
             # Sorgulama yaparken city_name'i küçük harfe dönüştür
             cursor.execute('''SELECT lat, lng
                             FROM cities  
-                            WHERE city = ?''', (city_name.lower(),))
+                            WHERE city = ?''', (city_name.capitalize(),))
             coordinates = cursor.fetchone()
             return coordinates
 
